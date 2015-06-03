@@ -19,6 +19,14 @@ Article: https://software.intel.com/en-us/html5/articles/intel-xdk-iot-edition-n
 var mraa = require('mraa'); //require mraa
 console.log('MRAA Version: ' + mraa.getVersion()); //write the mraa version to the console
 
+var Pusher = require('pusher');
+
+var pusher = new Pusher({
+  appId: '122192',
+  key: 'a5f5f9202c7b0ab8ecbd',
+  secret: '37f1bf3485400a334f35'
+});
+
 var analogPin0 = new mraa.Aio(0); //setup access analog input Analog pin #0 (A0)
 var myDigitalPin7 = new mraa.Gpio(7); //setup digital read on Digital pin #6 (D6)
 myDigitalPin7.dir(mraa.DIR_IN); //set the gpio direction to input
@@ -35,7 +43,9 @@ function periodicActivity() //
     console.log("!");
   } else {
     var analogValue = analogPin0.read(); //read the value of the analog pin
-    console.log(analogValue); //write the value of the analog pin to the console
+    pusher.trigger('heartbeat', 'beat', {
+      "value": analogValue
+    });
   }
   setTimeout(periodicActivity,1000); //call the indicated function after 1 second (1000 milliseconds)
 }
